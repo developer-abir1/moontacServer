@@ -1,10 +1,10 @@
-require("dotenv").config();
-const express = require("express");
-const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
+require('dotenv').config();
+const express = require('express');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const app = express();
 const port = process.env.PORT || 5000;
 
-const cors = require("cors");
+const cors = require('cors');
 
 app.use(cors());
 app.use(express.json());
@@ -18,17 +18,18 @@ const client = new MongoClient(uri, {
 
 const run = async () => {
   try {
-    const db = client.db("moontech");
-    const productCollection = db.collection("product");
-
-    app.get("/products", async (req, res) => {
+    await client.connect();
+    const db = client.db('moontech');
+    const productCollection = db.collection('product');
+    console.log('Connetd');
+    app.get('/products', async (req, res) => {
       const cursor = productCollection.find({});
       const product = await cursor.toArray();
 
       res.send({ status: true, data: product });
     });
 
-    app.post("/product", async (req, res) => {
+    app.post('/product', async (req, res) => {
       const product = req.body;
 
       const result = await productCollection.insertOne(product);
@@ -36,7 +37,7 @@ const run = async () => {
       res.send(result);
     });
 
-    app.delete("/product/:id", async (req, res) => {
+    app.delete('/product/:id', async (req, res) => {
       const id = req.params.id;
 
       const result = await productCollection.deleteOne({ _id: ObjectId(id) });
@@ -48,8 +49,8 @@ const run = async () => {
 
 run().catch((err) => console.log(err));
 
-app.get("/", (req, res) => {
-  res.send("Hello World!");
+app.get('/', (req, res) => {
+  res.send('Hello World!');
 });
 
 app.listen(port, () => {
